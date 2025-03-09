@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aro 3D Sound Editor - 16D/8D立体音響エディター</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Aro 3D Sound Editor</h1>
+            <p>16D/8D立体音響を簡単に作成</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="upload-section">
+            <h2>音声ファイルをアップロード</h2>
+            <div class="upload-area" id="dropArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>ファイルをドラッグ＆ドロップするか、クリックしてファイルを選択</p>
+                <input type="file" id="audioFileInput" accept="audio/*" class="file-input">
+            </div>
+            <div class="file-info" id="fileInfo">
+                <p>選択されたファイル: <span id="fileName">なし</span></p>
+                <p>ファイルサイズ: <span id="fileSize">-</span></p>
+                <p>ファイル形式: <span id="fileType">-</span></p>
+            </div>
+        </section>
+
+        <section class="editor-section" id="editorSection">
+            <h2>3D音響エフェクト設定</h2>
+            <div class="editor-controls">
+                <div class="control-group">
+                    <label for="dimensionSelect">音響タイプ:</label>
+                    <select id="dimensionSelect">
+                        <option value="8d">8D立体音響</option>
+                        <option value="16d">16D立体音響</option>
+                        <option value="32d">32D立体音響 (Research Preview)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="rotationSpeed">回転速度:</label>
+                    <input type="range" id="rotationSpeed" min="0.1" max="2" step="0.1" value="1">
+                    <span id="rotationSpeedValue">1.0</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="depth">空間の深さ:</label>
+                    <input type="range" id="depth" min="0" max="1" step="0.1" value="0.5">
+                    <span id="depthValue">0.5</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="reverb">リバーブ量:</label>
+                    <input type="range" id="reverb" min="0" max="1" step="0.1" value="0.3">
+                    <span id="reverbValue">0.3</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="liveQualityToggle">Live品質モード:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="liveQualityToggle">
+                        <label for="liveQualityToggle" class="toggle-label"></label>
+                    </div>
+                    <p class="feature-description">高度な3D音響処理と自然な音の動きを実現します</p>
+                </div>
+                
+                <div class="control-group" id="liveQuality2Group">
+                    <label for="liveQuality2Toggle">Live品質モード 2.0 <span class="badge">Research Preview</span>:</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="liveQuality2Toggle">
+                        <label for="liveQuality2Toggle" class="toggle-label"></label>
+                    </div>
+                    <p class="feature-description">AIが音源を分析し、最適な立体効果パターンを提案・最適化します（32Dモードのみ）</p>
+                </div>
+            </div>
+
+            <div class="audio-player">
+                <h3>プレビュー</h3>
+                <div class="waveform" id="waveform"></div>
+                <div class="player-controls">
+                    <button id="playButton" class="btn"><i class="fas fa-play"></i></button>
+                    <button id="pauseButton" class="btn"><i class="fas fa-pause"></i></button>
+                    <button id="stopButton" class="btn"><i class="fas fa-stop"></i></button>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="export-options">
+                <h3>エクスポート設定</h3>
+                <div class="control-group">
+                    <label for="formatSelect">出力形式:</label>
+                    <select id="formatSelect">
+                        <option value="mp3">MP3</option>
+                        <option value="wav">WAV</option>
+                    </select>
+                </div>
+
+                <div class="control-group" id="mp3QualityGroup">
+                    <label for="mp3Quality">MP3品質:</label>
+                    <select id="mp3Quality">
+                        <option value="128">128 kbps</option>
+                        <option value="192">192 kbps</option>
+                        <option value="256">256 kbps</option>
+                        <option value="320" selected>320 kbps</option>
+                    </select>
+                </div>
+
+                <button id="processButton" class="btn btn-primary">処理して保存</button>
+            </div>
+        </section>
+
+        <section class="result-section" id="resultSection">
+            <h2>処理結果</h2>
+            <div class="result-info">
+                <p>処理が完了しました！</p>
+                <div class="download-area">
+                    <a id="downloadLink" class="btn btn-download" download>
+                        <i class="fas fa-download"></i> ダウンロード
+                    </a>
+                    <p id="downloadFileName"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Aro Software Group</p>
+        </div>
+    </footer>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>処理中...</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
+    <script src="js/audio-processor.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
